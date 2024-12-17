@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ninja</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #143a61;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-size: 12px;
+    }
+
+    LINninja {
+      font-size: 16px;
+      text-align: center;
+      margin: 0;
+      padding: 6px;
+      background-color: #0d263f;
+      border-bottom: 1px solid #007bff;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    textarea {
+      width: calc(100% - 20px);
+      padding: 6px;
+      border: 1px solid #0d263f;
+      border-radius: 5px;
+      background-color: #0d263f;
+      color: white;
+      resize: none;
+      overflow: hidden;
+      height: calc(2.5em);
+      margin: 5px auto;
+    }
+
+    textarea::placeholder {
+      white-space: pre-wrap;
+    }
+
+    button {
+      padding: 6px 15px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+    }
+
+    button:hover:enabled {
+      background-color: #0056b3;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      margin: 5px 0;
+    }
+
+    .button-container button {
+      padding: 3px 8px;
+      margin: 2px;
+      min-width: 70px;
+    }
+
+    .button-special {
+      padding: 5px 10px;
+      min-width: 80px;
+    }
+
+    #TXTresp .line.selected {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+    }
+
+    #TXTresp .line.selected span {
+      color: black;
+      font-weight: bold;
+    }
+
+    #TXTresp .line.selected .ver.verified {
+      color: black;
+      font-weight: bold;
+    }
+
+    #TXTresp {
+      width: calc(100% - 20px);
+      height: 320px;
+      background-color: #0d263f;
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-family: monospace;
+      margin: 5px auto;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    #TXTresp .header {
+      background-color: #0d263f;
+      color: white;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-family: monospace;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      margin: 0 0 5px 0;
+      text-align: left;
+      pointer-events: none;
+      position: relative;
+    }
+
+    #LINmsg {
+      background-color: #4f8dcb;
+      color: white;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-family: monospace;
+      font-weight: bold;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      overflow: hidden;
+      display: none;
+      z-index: 1000;
+      transition: none;
+    }
+
+    #TXTresp .line:focus {
+      background-color: #66aaff;
+    }
+
+    #TXTresp .line {
+      display: grid;
+      grid-template-columns: 100px 60px 40px 60px auto;
+      gap: 3px;
+      padding: 5px;
+      align-items: center;
+    }
+
+    #TXTresp .header {
+      display: grid;
+      grid-template-columns: 100px 60px 40px 60px auto;
+      gap: 3px;
+      padding: 5px;
+      font-weight: bold;
+    }
+
+    #TXTresp .line.selected {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+    }
+
+    #TXTresp .line.selected span {
+      color: black;
+      font-weight: bold;
+    }
+
+    #TXTresp .line.selected .ver.verified {
+      color: black;
+      font-weight: bold;
+    }
+
+    .valor {
+      text-align: right;
+      font-family: monospace;
+    }
+
+    .posic {
+      text-align: center;
+      font-family: monospace;
+    }
+
+    .ver {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    #TXTresp::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    #TXTresp::-webkit-scrollbar-thumb {
+      background-color: #007bff;
+      border-radius: 6px;
+    }
+
+    #TXTresp::-webkit-scrollbar-thumb:hover {
+      background-color: #0056b3;
+    }
+
+    #TXTresp::-webkit-scrollbar-track {
+      background-color: #0d263f;
+    }
+
+    @media (max-width: 768px) {
+      .button-container {
+        gap: 3px;
+        margin: 3px 0;
+      }
+
+      textarea {
+        height: 3em;
+      }
+    }
+
+    .verified {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    .line {
+      display: grid;
+      grid-template-columns: 100px 60px 40px 60px auto;
+      gap: 3px;
+      padding: 6px 5px;
+      border-bottom: 1px solid rgba(79, 141, 203, 0.2);
+    }
+
+    .line:hover {
+      background-color: rgba(79, 141, 203, 0.1);
+    }
+
+    .valor {
+      font-family: monospace;
+      text-align: right;
+      padding-right: 5px;
+    }
+
+    .posic {
+      font-family: monospace;
+      text-align: center;
+    }
+
+    .ver {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .code {
+      font-family: monospace;
+      text-align: center;
+    }
+
+    button {
+      height: 30px;
+      padding: 6px;
+      min-width: 80px;
+      border: 1px solid #4f8dcb;
+      border-radius: 3px;
+      background-color: #4f8dcb;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 28px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:hover {
+      background-color: #3a7ab8;
+      border-color: #3a7ab8;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .BTNdelete,
+    .BTNcreate,
+    #BTNmicrofone {
+      height: 30px;
+    }
+
+    .button-special {
+      background-color: #4f8dcb !important;
+      border: 2px solid #ffffff !important;
+      font-weight: bold !important;
+      padding: 6px 20px !important;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .button-special:hover {
+      background-color: #66aaff !important;
+      transform: scale(1.05);
+      transition: all 0.2s ease;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .filter-group label {
+      color: white;
+      font-size: 0.9em;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 3px;
+      border-radius: 3px;
+      border: 1px solid #4f8dcb;
+      background-color: #0d263f;
+      color: white;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 100px 80px 50px 80px auto;
+      gap: 3px;
+      padding: 6px;
+      background-color: #0d263f;
+      border-bottom: 2px solid #4f8dcb;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .line {
+      display: grid;
+      grid-template-columns: 100px 80px 50px 80px auto;
+      gap: 3px;
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(79, 141, 203, 0.2);
+      align-items: center;
+    }
+
+    .valor {
+      text-align: right;
+      font-family: monospace;
+    }
+
+    .posic {
+      text-align: center;
+      font-family: monospace;
+    }
+
+    .ver {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .code {
+      text-align: center;
+      font-family: monospace;
+    }
+
+    .item {
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <LINninja>
+    <div style="display: flex; align-items: center; gap: 3px;">
+      <img src="https://tenor.com/pt-BR/view/afa-assassin-ninja-gif-5753060544386319151"
+        style="height: 12px; width: auto;" />
+      <span id="VARnameVerSpan"></span>
+    </div>
+    <div id="LINmsg">...</div>
+  </LINninja>
+
+  <textarea id="TXTquest" rows="1" tabindex="1"></textarea>
+
+  <div class="button-container">
+    <button id="BTNcls" tabindex="2">Limpar</button>
+    <button id="BTNhelp" tabindex="3">Ajuda</button>
+
+    <button id="BTNorc" tabindex="4" onclick="FNCorcamento()" class="button-special">[O] Orçamento</button>
+    <button id="BTNvenda" tabindex="5" onclick="FNCVenda()" class="button-special">[V] Venda</button>
+  </div>
+
+  <div class="button-container">
+    <button id="BTNmicrofone" tabindex="6">Microfone</button>
+    <button id="BTNedit" tabindex="7">Editar</button>
+    <button class="BTNdelete" tabindex="8">Deletar</button>
+    <button class="BTNcreate" tabindex="9">Cadastrar</button>
+  </div>
+
+  <div id="TXTresp" tabindex="10">
+    <div class="header">Valor | Posic | Ver | Code | Item</div>
+  </div>
+
+  <div id="editModal" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(20, 58, 97, 0.95);
+        padding: 5px;
+        border-radius: 5px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #4f8dcb;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+    <div style="
+          background-color: rgba(20, 58, 97, 0.95);
+          padding: 5px;
+          border-radius: 5px;
+          width: 300px;
+          color: white;">
+      <div style="
+            background-color: #4f8dcb;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;">
+        Editar Item Selecionado
+      </div>
+
+      <label for="editValor">Valor:</label>
+      <input type="text" id="editValor" style="width: 100%; margin-bottom: 10px" maxlength="13"
+        placeholder="999.999,00" />
+
+      <label for="editPosic">Posic:</label>
+      <input type="text" id="editPosic" style="width: 100%; margin-bottom: 10px" maxlength="5" placeholder="99999" />
+
+      <label for="editVer">Verificado S/N:</label>
+      <input type="text" id="editVer" style="width: 100%; margin-bottom: 10px" maxlength="1" placeholder="S/N" />
+
+      <label for="editCode">Code:</label>
+      <input type="text" id="editCode" style="width: 100%; margin-bottom: 10px" disabled />
+
+      <label for="editItem">Item:</label>
+      <input type="text" id="editItem" style="width: 100%; margin-bottom: 20px" />
+
+      <div class="button-container" style="justify-content: space-between">
+        <button id="BTNsave" onclick="FNCmakeEDIT()">Salvar</button>
+        <button id="BTNcancel" onclick="FNCcloseEDIT()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="VARcreateModal" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(20, 58, 97, 0.95);
+        padding: 5px;
+        border-radius: 5px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #4f8dcb;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+    <div style="
+          background-color: rgba(20, 58, 97, 0.95);
+          padding: 5px;
+          border-radius: 5px;
+          width: 300px;
+          color: white;">
+      <div style="
+            background-color: #4f8dcb;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;">
+        Cadastrar Novo Item
+      </div>
+
+      <label for="VARnewValor">Valor:</label>
+      <input type="text" id="VARnewValor" style="width: 100%; margin-bottom: 10px" maxlength="13"
+        placeholder="999.999,00" />
+
+      <label for="VARnewPosic">Posic:</label>
+      <input type="text" id="VARnewPosic" style="width: 100%; margin-bottom: 10px" maxlength="5" placeholder="99999" />
+
+      <label for="VARnewVer">Verificado S/N:</label>
+      <input type="text" id="VARnewVer" style="width: 100%; margin-bottom: 10px" maxlength="1" value="N"
+        placeholder="S/N" />
+
+      <label for="VARnewCode">Code:</label>
+      <input type="text" id="VARnewCode" style="width: 100%; margin-bottom: 10px" disabled />
+      <label for="VARnewItem">Item:</label>
+      <input type="text" id="VARnewItem" style="width: 100%; margin-bottom: 20px" />
+
+      <div class="button-container" style="justify-content: space-between">
+        <button id="BTNcreate" onclick="FNCmakeCreate()">Cadastrar</button>
+        <button id="BTNcancelCreate" onclick="FNCcloseCreate()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="filterArea" style="
+    background-color: #143a61;
+    padding: 6px;
+    margin: 5px;
+    border-radius: 5px;
+    display: flex;
+    gap: 3px;
+    align-items: center;
+">
+
+    <div id="confirmModal" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;">
+      <div style="
+        background-color: #143a61;
+        padding: 5px;
+        border-radius: 5px;
+        max-width: 300px;
+        width: 90%;
+        border: 2px solid #4f8dcb;
+        text-align: center;">
+        <div id="confirmMessage" style="
+            color: white;
+            margin-bottom: 20px;
+            font-size: 12px;">
+        </div>
+        <div style="
+            display: flex;
+            justify-content: space-around;
+            gap: 3px;">
+          <button id="confirmYes" class="button-special">Sim</button>
+          <button id="confirmNo">Não</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BTNsave = document.getElementById("BTNsave"); //Botão de salvar
+      const BTNcancel = document.getElementById("BTNcancel"); //Botão de cancelar
+      const BTNcls = document.getElementById("BTNcls"); //Botão de limpar
+      const BTNhelp = document.getElementById("BTNhelp"); //Botão de ajuda
+      const TXTsearch = document.getElementById("TXTquest"); //Campo de pesquisa
+      const LSTresp = document.getElementById("TXTresp"); //Lista de respostas
+      const LINmsg = document.getElementById("LINmsg"); //Mensagem de status
+      const VARFileName = "itens.dbf"; //Nome do arquivo
+      const VARNameVer = "Ninja v1.19"; //Nome e versão do aplicativo
+      const VARTxtPad = "Pesquise antes, selecione item e clique nele para continuar..."; //Texto padrão
+      let VARTxtLine = null; //Linha selecionada
+      let VARmessageTime = null; // Variável global para armazenar o ID do timeout
+
+      const Furl =
+        "https://raw.githubusercontent.com/OrlandoAlvaresRios/itens/refs/heads/main/itens.dbf"; //URL do arquivo
+
+      FNCvalidateNumericInput(document.getElementById('editPosic'), 5); //Valida a posição
+
+      FNCvalidateNumericInput(document.getElementById('VARnewPosic'), 5); //Valida a posição
+
+      function FNCapplyFilters(lines) { //Função para aplicar filtros
+        const valorFilter = document.getElementById('filterValor').value;
+        const verFilter = document.getElementById('filterVer').value;
+        const valorMin = parseFloat(document.getElementById('valorMin').value.replace(',', '.')) || 0;
+        const valorMax = parseFloat(document.getElementById('valorMax').value.replace(',', '.')) || 999999;
+
+        return lines.filter(line => {
+          const [valor, , ver] = line.split('|');
+          const numValor = parseFloat(valor.replace('.', '').replace(',', '.'));
+
+          let passValor = true; // Filtro de valor
+          switch (valorFilter) {
+            case 'menor':
+              passValor = numValor <= valorMin;
+              break;
+            case 'maior':
+              passValor = numValor >= valorMin;
+              break;
+            case 'entre':
+              passValor = numValor >= valorMin && numValor <= valorMax;
+              break;
+          }
+          const passVer = !verFilter || ver.trim() === verFilter; // Filtro de verificação
+          return passValor && passVer;
+        });
+      }
+
+      function FNCupdateTotals(filteredLines) { //Função para atualizar totais
+        const totals = filteredLines.reduce((acc, line) => {
+          const [valor, , ver] = line.split('|').map(part => part.trim());
+          const numValor = parseFloat(valor.replace('.', '').replace(',', '.'));
+          return {
+            totalItens: acc.totalItens + 1,
+            totalValor: acc.totalValor + numValor,
+            verificados: acc.verificados + (ver.toUpperCase() === 'S' ? 1 : 0)
+          };
+        }, { totalItens: 0, totalValor: 0, verificados: 0 });
+
+        document.getElementById('totalItens').textContent = totals.totalItens;
+        document.getElementById('totalValor').textContent =
+          FNCformatMoney(totals.totalValor.toString());
+        document.getElementById('totalVerificados').textContent =
+          `${totals.verificados}/${totals.totalItens}`;
+      }
+
+      function FNCvalidateNumericInput(input, maxLength) { //Validação de entrada numérica
+        input.addEventListener('keypress', function (e) { //Adiciona evento de keypress ao campo
+          if (!/\d/.test(e.key)) { //Se a tecla pressionada não é um número
+            e.preventDefault();
+          }
+          if (this.value.length >= maxLength) { //Se o valor atual é maior que o máximo
+            e.preventDefault();
+          }
+        });
+      }
+
+      function FNCformatMoney(value) { //Função para formatar valor monetário
+        if (!value) return 'R$ 0,00';
+        const numValue = parseFloat(value.replace(/[^\d,]/g, '').replace(',', '.')); //Converte para número e formata
+        return new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(numValue);
+      }
+
+      function FNCselectLine(element) {
+        // Remove a seleção anterior
+        const previousSelected = document.querySelector('.line.selected');
+        if (previousSelected) {
+          previousSelected.classList.remove('selected');
+        }
+
+        // Adiciona a nova seleção
+        element.classList.add('selected');
+        VARTxtLine = element;
+
+        // Captura os dados da linha selecionada
+        const spans = element.querySelectorAll('span');
+        const valor = spans[0].textContent.trim();
+        const posic = spans[1].textContent.trim();
+        const ver = spans[2].textContent.trim();
+        const code = spans[3].textContent.trim();
+        const item = spans[4].textContent.trim();
+
+        // Preenche os campos do formulário de edição
+        document.getElementById('editValor').value = valor.replace('R$', '').trim();
+        document.getElementById('editPosic').value = posic;
+        document.getElementById('editVer').value = ver;
+        document.getElementById('editCode').value = code;
+        document.getElementById('editItem').value = item;
+
+        FNCshowMessage(`Item selecionado: ${item}`);
+      }
+
+      function FNCcreateLine(data) { //Função para criar linha
+        const [valor, posic, ver, code, item] = data.split("|").map(part => part.trim());
+        return `
+        <div class="line" tabindex="0" data-code="${code}">
+            <span class="valor">${FNCformatMoney(valor)}</span>
+            <span class="posic">${posic.padStart(5, '0')}</span>
+            <span class="ver">${ver.toUpperCase()}</span>
+            <span class="code">${code}</span>
+            <span class="item">${item}</span>
+        </div>
+    `;
+      }
+
+      function FNCformatMoney(value) { //Função para formatar valor monetário
+        return parseFloat(value) //Converte para número
+          .toLocaleString('pt-BR', { //Formata para o padrão brasileiro
+            minimumFractionDigits: 2, //Mínimo de 2 casas decimais
+            maximumFractionDigits: 2 //Máximo de 2 casas decimais
+          });
+      }
+
+      function FNCvalidateValor(input) { // Validação do valor monetário
+        input.addEventListener('input', function (e) { //Adiciona evento de input ao campo de valor
+          let value = e.target.value.replace(/\D/g, ''); //Remove tudo que não é número
+          value = (parseFloat(value) / 100).toFixed(2); //Converte para número e formata
+          e.target.value = value.replace('.', ','); //Formata o valor
+        });
+      }
+
+      function FNCvalidatePosic(input) { //Validação da posição
+        input.addEventListener('input', function (e) { //Adiciona evento de input ao campo de posição
+          e.target.value = e.target.value.replace(/\D/g, '').substr(0, 5); //Remove tudo que não é número e limita a 5 caracteres
+        });
+      }
+
+      function FNCvalidateVer(input) { //Validação do verificador
+        input.addEventListener('input', function (e) { //Adiciona evento de input ao campo de verificador
+          let value = e.target.value.toUpperCase(); //Converte para maiúsculas
+          if (value && value !== 'S' && value !== 'N') { //Se o valor não é S ou N
+            value = 'N'; //Converte para N
+          }
+          e.target.value = value;
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () { //Adiciona evento de carregamento do DOM
+        FNCvalidateValor(document.getElementById('editValor')); //Valida o valor
+        FNCvalidatePosic(document.getElementById('editPosic')); //Valida a posição
+        FNCvalidateVer(document.getElementById('editVer')); //Valida o verificador
+
+        FNCvalidateValor(document.getElementById('VARnewValor')); //Valida o valor
+        FNCvalidatePosic(document.getElementById('VARnewPosic')); //Valida a posição
+        FNCvalidateVer(document.getElementById('VARnewVer')); //Valida o verificador
+      });
+
+      function FNCformatInputValue(value) { //Função para formatar valor monetário
+        value = value.replace(/\D/g, ''); //Remove tudo que não é número
+        value = (value / 100).toFixed(2); //Converte para número e formata
+        return value.replace('.', ','); //Formata o valor
+      }
+
+      document.getElementById('editValor').addEventListener('blur', function (e) { //Adiciona evento de input ao campo de valor
+        e.target.value = FNCformatInputValue(e.target.value); //Formata o valor
+      });
+
+      document.getElementById('VARnewValor').addEventListener('blur', function (e) { //Adiciona evento de input ao campo de valor
+        e.target.value = FNCformatInputValue(e.target.value);
+      });
+
+      function FNCdebounce(FNCfunc, VARdelay) { //Função para criar delay
+        let VARtimeoutId; //Variável para armazenar o ID do timeout
+        return function (...args) { //Função que cria o delay
+          clearTimeout(VARtimeoutId); //Limpa o timeout anterior
+          VARtimeoutId = setTimeout(() => { //Cria um novo timeout
+            FNCfunc.apply(this, args); //Aplica a função com os argumentos
+          }, VARdelay); //Tempo de delay
+        };
+      }
+
+      function FNCverifique() { //Função para verificar se há item selecionado
+        if (!VARTxtLine) {
+          FNCshowMessage(VARTxtPad);
+          return false;
+        }
+        return true;
+      }
+
+      function loadFile() { //Função para carregar o arquivo
+        const storedData = localStorage.getItem(VARFileName); //Obtém os dados do localStorage
+        if (storedData == null) { //Se não há dados
+          FNCrefdatabase(); //Refaz a base de dados
+        }
+        FNCSearchData(""); //Exibe os dados
+      }
+
+      document.querySelector(".BTNdelete").addEventListener("click", async function () {
+        if (!FNCverifique()) { return; }
+        const spans = VARTxtLine.querySelectorAll('span');
+        const code = spans[3].textContent.trim(); // Código está na posição 3
+        const item = spans[4].textContent.trim(); // Item está na posição 4
+
+        if (await FNCshowconfirm("Deletar o item selecionado ?")) {
+          const dados = localStorage.getItem(VARFileName);
+          const linhas = dados.split('\n')
+            .map(linha => linha.trim())
+            .filter(linha => linha.length > 0);
+          const novasLinhas = linhas.filter(linha => {
+            const [, , , lineCode] = linha.split('|').map(part => part.trim());
+            return lineCode !== code;
+          });
+          if (linhas.length !== novasLinhas.length) {
+            localStorage.setItem(VARFileName, novasLinhas.join('\n'));
+            FNCSearchData("");
+            FNCshowMessage("Item deletado com sucesso!");
+            VARTxtLine = null;
+          } else {
+            FNCshowMessage("Item não encontrado para deleção!");
+            VARTxtLine = null;
+          }
+        } else {
+          FNCshowMessage("Operação cancelada pelo usuário");
+        }
+      });
+
+      function FNCopenEDIT(line) { //Função para abrir o modal de edição
+        if (!FNCverifique()) { return; }
+
+        FNChabilitaBTN(false);
+        const spans = line.querySelectorAll('span');
+        const valor = spans[0].textContent.replace('R$', '').trim();
+        const posic = spans[1].textContent.trim();
+        const ver = spans[2].textContent.trim();
+        const code = spans[3].textContent.trim();
+        const item = spans[4].textContent.trim();
+        document.getElementById("editValor").value = valor;
+        document.getElementById("editPosic").value = posic;
+        document.getElementById("editVer").value = ver;
+        document.getElementById("editCode").value = code;
+        document.getElementById("editItem").value = item;
+        document.getElementById("editModal").style.display = "flex";
+        FNCshowMessage("Editar item selecionado");
+      }
+
+      function FNCcloseEDIT() { //Função para fechar o modal de edição
+        FNChabilitaBTN(true); //Reabilita botões principais
+        document.getElementById("editModal").style.display = "none"; //Fecha o modal
+        FNCshowMessage("Editar item cancelada"); //Mensagem de sucesso
+      }
+
+      function FNCmakeEDIT() { //Função para editar item
+        let valor = document.getElementById("editValor").value.trim();
+        const posic = document.getElementById("editPosic").value.trim();
+        const ver = document.getElementById("editVer").value.trim().toUpperCase();
+        const code = document.getElementById("editCode").value.trim();
+        let item = document.getElementById("editItem").value;
+        item = FNCnormalizeText(item);
+        valor = valor.replace('R$', '').replace(/\./g, '').replace(',', '.');
+        if (isNaN(parseFloat(valor))) {
+          FNCshowMessage("Valor inválido");
+          return;
+        }
+
+        valor = parseFloat(valor).toFixed(2);
+
+        if (!valor || !posic || !ver || !item) {
+          FNCshowMessage("Todos os campos são obrigatórios");
+          return;
+        }
+
+        if (!/^[SN]$/.test(ver)) {
+          FNCshowMessage("Verificador deve ser S ou N");
+          return;
+        }
+
+        const newLine = `${valor}|${posic}|${ver}|${code}|${item}`;
+
+        const data = localStorage.getItem(VARFileName);
+        if (data) {
+          const lines = data.split('\n').filter(line => line.trim());
+          const updatedLines = lines.map(line => {
+            const [, , , lineCode] = line.split('|');
+            return lineCode.trim() === code ? newLine : line;
+          });
+
+          localStorage.setItem(VARFileName, updatedLines.join('\n'));
+          FNCSearchData("");
+          FNCcloseEDIT();
+          FNCshowMessage("Item editado com sucesso!");
+        }
+      }
+
+      function FNCmakeCreate() { //Função para criar novo item
+        let valor = document.getElementById("VARnewValor").value.trim();
+        const posic = document.getElementById("VARnewPosic").value.trim();
+        const ver = document.getElementById("VARnewVer").value.trim().toUpperCase();
+        const code = document.getElementById("VARnewCode").value.trim();
+        let item = document.getElementById("VARnewItem").value;
+        item = FNCnormalizeText(item);
+        valor = valor.replace('R$', '').replace(/\./g, '').replace(',', '.');
+        if (isNaN(parseFloat(valor))) {
+          FNCshowMessage("Valor inválido");
+          return;
+        }
+        valor = parseFloat(valor).toFixed(2);
+        if (!valor || !posic || !ver || !item) {
+          FNCshowMessage("Todos os campos são obrigatórios");
+          return;
+        }
+        if (!/^[SN]$/.test(ver)) {
+          FNCshowMessage("Verificador deve ser S ou N");
+          return;
+        }
+        const newLine = `${valor}|${posic}|${ver}|${code}|${item}`;
+        const data = localStorage.getItem(VARFileName);
+        const lines = data ? data.split('\n').filter(line => line.trim()) : [];
+        lines.push(newLine);
+        lines.sort((a, b) => {
+          const codeA = a.split('|')[3];
+          const codeB = b.split('|')[3];
+          return codeA.localeCompare(codeB);
+        });
+        localStorage.setItem(VARFileName, lines.join('\n'));
+        FNCSearchData("");
+        FNCcloseCreate();
+        FNCshowMessage("Item cadastrado com sucesso!");
+      }
+
+      function FNCupdateBTN() { //Função para atualizar os botões
+        TXTsearch.placeholder = "Digite aqui item a pesquisar ou parte dele ou clique em Ajuda.";
+
+        BTNcancel.innerText = "[ESC] Cancelar";
+        BTNcls.innerText = "[ESC] Limpar";
+        BTNhelp.innerText = "[F1] Ajuda";
+        BTNsave.innerText = "[ENTER] Salvar";
+        document.getElementById("BTNcreate").innerText = "[ENTER] Cadastrar";
+        document.getElementById("BTNcancelCreate").innerText = "[ESC] Cancelar";
+        document.getElementById("BTNedit").innerText = "[E] Editar";
+        document.querySelector(".BTNdelete").innerText = "[D] Deletar";
+        document.querySelector(".BTNcreate").innerText = "[C] Cadastrar";
+        document.getElementById("BTNmicrofone").innerText = "[M] Microfone";
+
+        if (window.innerWidth <= 768) { //Se a tela é pequena
+          BTNcls.innerText = "Limpar";
+          BTNhelp.innerText = "Ajuda";
+          BTNsave.innerText = "Salvar";
+          BTNcancel.innerText = "Cancelar";
+          document.getElementById("BTNedit").innerText = "Editar";
+          document.querySelector(".BTNdelete").innerText = "Deletar";
+          document.querySelector(".BTNcreate").innerText = "Cadastrar";
+          document.getElementById("BTNcreate").innerText = "Cadastrar";
+          document.getElementById("BTNcancelCreate").innerText = "Cancelar";
+          document.getElementById("BTNmicrofone").innerText = "Microfone";
+        }
+      }
+
+      function FNCnormalizeText(text) { //Função para normalizar texto
+        return text
+          .toLowerCase() // converte para caixa baixa
+          .replace(/\s+/g, ' ') // remove espaços duplos
+          .trim(); // remove espaços do início e fim
+      }
+
+      function FNCnormSTR(str) { //Função para normalizar a string
+        const replacements = { //Substituição de caracteres acentuados
+          á: "a", //Substituição de caracteres acentuados
+          à: "a",
+          é: "e",
+          ê: "e",
+          í: "i",
+          ó: "o",
+          ô: "o",
+          ú: "u",
+          ç: "c",
+          õ: "o",
+          ã: "a",
+          â: "a",
+          ü: "u",
+        };
+        return str //Converte para minúsculas  
+          .toLowerCase() //Converte para minúsculas
+          .normalize("NFD") //Normaliza a string
+          .replace(/[\u0300-\u036f]/g, "") //Remove caracteres acentuados
+          .replace(/[áàéêíóôúçãâü]/g, (match) => replacements[match] || match) //Substitui caracteres acentuados
+          .replace(/\s+/g, " ") //Substitui múltiplos espaços por um único espaço
+      }
+
+      function FNCsearch() { //Função para pesquisar
+        const query = FNCnormSTR(TXTsearch.value); //Normaliza a string
+        TXTsearch.value = query; //Preenche o campo de pesquisa
+        FNCSearchData(query); //Pesquisa os itens
+      }
+
+      function FNCSearchData(searchTerm) { //Função para pesquisar  
+        VARTxtLine = null;
+        const data = localStorage.getItem(VARFileName);
+        if (!data) {
+          FNCshowMessage("Sem dados para exibir");
+          return;
+        }
+
+        LSTresp.innerHTML = `
+        <div class="header">
+            <span class="valor">Valor</span>
+            <span class="posic">Posic</span>
+            <span class="ver">Ver</span>
+            <span class="code">Code</span>
+            <span class="item">Item</span>
+        </div>
+    `;
+
+        const lines = data.split('\n')
+          .map(line => line.trim())
+          .filter(line => line.length > 0);
+
+        if (lines.length === 0) {
+          FNCshowMessage("Nenhum item encontrado");
+          return;
+        }
+
+        const searchTermNorm = FNCnormSTR(searchTerm);
+
+        const filteredLines = lines.filter(line => {
+          const parts = line.split('|').map(part => part.trim());
+          if (parts.length !== 5) return false;
+
+          const [valor, posic, ver, code, item] = parts;
+          return FNCnormSTR(item).includes(searchTermNorm) ||
+            FNCnormSTR(code).includes(searchTermNorm) ||
+            FNCnormSTR(posic).includes(searchTermNorm) ||
+            FNCnormSTR(valor).includes(searchTermNorm);
+        });
+
+        filteredLines.forEach(line => {
+          const [valor, posic, ver, code, item] = line.split('|').map(part => part.trim());
+          const formattedLine = `
+            <div class="line" tabindex="0" onclick="FNCselectLine(this)">
+                <span class="valor">${FNCformatMoney(valor)}</span>
+                <span class="posic">${posic.padStart(5, '0')}</span>
+                <span class="ver ${ver.toLowerCase() === 's' ? 'verified' : ''}">${ver}</span>
+                <span class="code">${code}</span>
+                <span class="item">${item}</span>
+            </div>
+        `;
+          LSTresp.innerHTML += formattedLine;
+        });
+      }
+
+      function FNChelp() { //Função para exibir ajuda
+        LSTresp.innerHTML =
+          "Ninja é um aplicativo que usa IA e desenvolvido com algoritmos avançados de pesquisa, comandos de voz e cadastro de itens, deletar e editar itens.\
+        Pode ser executado em qualquer celular, tablet ou computador com acesso a internet.\
+        Não é necessario configurar redes, baixar ou instalar nada, apenas clicar no link recebido por e-mail ou mensagem.<br><br>\
+        - Digite na Pesquisa acima um item ou parte dele, ex. Lampada, Valor de item, Estoque ou Code. <br><br>\
+        - Se deixar a Pesquisa vazia e carrego todos os Itens da base de dados.<br><br>\
+        - A pesquisa não é sensível a letras maiúsculas ou minúsculas, acentuações ou múltiplos espaços. <br><br>\
+        - Pesquise, clique num item depois clique em Editar, Deletar ou Cadastrar.<br><br>\
+        - Ao Cadastrar, clique num item para transportar texto do item para o campo Item do cadastro facilitando a digitação. <br><br>\
+        - Clique no botão Microfone e comande com voz como 'Ninja quero ajuda' ou 'Ninja limpar pesquisa' ou 'Ninja cadastrar' ou\
+         'Ninja quero editar' ou 'Ninja quero deletar'.<br><br>\
+        - Fale sempre 'Ninja' antes do comando de voz ou pesquisa.<br><br>\
+        - Ao usar o Microfone e não for comando válido como os acima, Ninja pesquisará com o texto falado."
+
+        FNCshowMessage("Ajuda exibida"); //Mensagem de ajuda exibida
+        VARTxtLine = null; //Limpa o item selecionado
+      }
+
+      function FNCshowconfirm(message) { //Função para exibir mensagens de confirmação
+        return new Promise((resolve) => {
+          const modal = document.getElementById('confirmModal');
+          const messageEl = document.getElementById('confirmMessage');
+          const yesBtn = document.getElementById('confirmYes');
+          const noBtn = document.getElementById('confirmNo');
+
+          messageEl.textContent = message;
+          modal.style.display = 'flex';
+
+          function handleYes() {
+            modal.style.display = 'none';
+            cleanup();
+            FNCshowMessage("Operação confirmada");
+            resolve(true);
+          }
+
+          function handleNo() {
+            modal.style.display = 'none';
+            cleanup();
+            resolve(false);
+          }
+
+          function handleEscape(e) {
+            if (e.key === 'Escape') {
+              handleNo();
+            } else if (e.key === 'Enter') {
+              handleYes();
+            }
+          }
+
+          function cleanup() {
+            yesBtn.removeEventListener('click', handleYes);
+            noBtn.removeEventListener('click', handleNo);
+            document.removeEventListener('keydown', handleEscape);
+          }
+
+          yesBtn.addEventListener('click', handleYes);
+          noBtn.addEventListener('click', handleNo);
+          document.addEventListener('keydown', handleEscape);
+        });
+      }
+
+      function FNCshowError(message) { //Função para exibir mensagens de erro
+        const msgElement = document.getElementById("LINmsg");
+        msgElement.innerHTML = message;
+        msgElement.style.backgroundColor = "#ff4444";
+        msgElement.style.display = "block";
+
+        setTimeout(() => {
+          msgElement.style.display = "none";
+          msgElement.style.backgroundColor = "#4f8dcb"; // volta à cor original
+        }, 3000);
+      }
+
+      function FNCshowMessage(message) {
+        const msgElement = document.getElementById("LINmsg");
+        message = " ⚠️ " + message + " ⚠️ "
+        msgElement.innerHTML = message;
+        msgElement.style.display = "block";
+
+        // Cancela qualquer timeout existente
+        if (VARmessageTime) {
+          clearTimeout(VARmessageTime);
+        }
+
+        // Cria um novo timeout e armazena seu ID
+        VARmessageTime = setTimeout(() => {
+          msgElement.style.display = "none";
+          VARmessageTime = null; // Limpa o ID após executar
+        }, 6000);
+      }
+
+      function FNCclean() { //Limpa a pesquisa
+        TXTsearch.value = ""; //Limpa o campo de pesquisa
+        FNCupdateBTN(); //Atualiza os botões
+        loadFile(); //Carrega os dados
+        FNCshowMessage("Bem-vindo ao Ninja!"); //Mensagem de boas-vindas
+        VARTxtLine = null;
+      }
+
+      function FNCorcamento() { //Função para orçamentos
+        FNCshowMessage("Em desenvolvimento. Aguarde.");
+      }
+
+      function FNCvenda() { //Função para vendas
+        FNCshowMessage("Em desenvolvimento. Aguarde.");
+      }
+
+      function FNChabilitaBTN(VARstatus) { //Função para habilitar/desabilitar elementos da interface
+        //Lista de botões principais para controlar
+        const VARbotoes = [ //Lista de botões principais para controlar
+          BTNcls, //Botão limpar
+          BTNhelp, //Botão ajuda
+          BTNorc, //Botão orçamento
+          BTNvenda, //Botão venda
+          document.getElementById("BTNedit"), //Botão editar
+          document.querySelector(".BTNdelete"), //Botão deletar
+          document.querySelector(".BTNcreate") //Botão cadastrar
+        ];
+
+        VARbotoes.forEach(botao => { //Itera sobre cada botão
+          botao.disabled = !VARstatus; //Desabilita/habilita o botão
+          botao.style.opacity = VARstatus ? "1" : "0.5"; //Altera a opacidade do botão
+        });
+
+        TXTsearch.disabled = !VARstatus; //Desabilita/habilita o campo de pesquisa
+        TXTsearch.style.opacity = VARstatus ? "1" : "0.5";
+
+        LSTresp.style.pointerEvents = VARstatus ? "auto" : "none"; //Controla o campo de pesquisa
+        LSTresp.style.opacity = VARstatus ? "1" : "0.5"; //Altera a opacidade do campo de pesquisa
+        LSTresp.tabIndex = VARstatus ? "8" : "-1"; //Remove da ordem de tabulação quando desabilitado
+      }
+
+      function FNCstartMicrofone() {
+        if (!('webkitSpeechRecognition' in window)) {
+          FNCshowMessage("Seu navegador não suporta reconhecimento de voz");
+          return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'pt-BR';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        FNCshowMessage("Fale 'Ninja' seguido do comando...");
+        recognition.start();
+
+        recognition.onresult = function (event) { //Função para capturar o resultado do reconhecimento de voz
+          const texto = event.results[0][0].transcript
+            .replace(/[.,!?;:]/g, '')
+            .trim()
+            .toLowerCase();
+
+          if (!texto.startsWith('ninja')) { //Verifica se o texto começa com ninja
+            FNCshowMessage("Diga 'ninja' antes do comando");
+            return; //Retorna se não começa com ninja
+          }
+
+          const comando = texto.replace('ninja', '').trim(); //Remove ninja e limpa espaços
+
+          if (!comando) { //Verifica se o comando está vazio
+            FNCshowMessage("Aguardando comando após 'ninja'");
+            return; //Retorna se o comando está vazio
+          }
+
+          if (comando.includes('limpar') ||
+            comando.includes('limpe') ||
+            comando.includes('limpa')) { //Verifica se o comando inclui limpar
+            FNCclean(); //Limpa a pesquisa
+            FNCshowMessage("Comando executado: Limpar"); //Mensagem de comando executado
+            return; //Retorna se o comando inclui limpar
+          }
+
+          if (comando.includes('editar') ||
+            comando.includes('edite') ||
+            comando.includes('edita')) { //Verifica se o comando inclui editar
+            if (VARTxtLine) { //Verifica se há um item selecionado
+              FNCopenEDIT(VARTxtLine); //Abre o modal de edição
+              FNCshowMessage("Comando executado: Editar item"); //Mensagem de comando executado
+            } else {
+              FNCshowMessage(VARTxtPad); //Mensagem de erro
+            }
+            return; //Retorna se não há um item selecionado
+          }
+
+          if (comando.includes('ajuda') ||
+            comando.includes('ajude') ||
+            comando.includes('ajudar')) { //Verifica se o comando inclui ajuda
+            FNChelp(); //Exibe a ajuda
+            FNCshowMessage("Comando executado: Ajuda"); //Mensagem de comando executado
+            return; //Retorna se o comando inclui ajuda
+          }
+
+          if (comando.includes('deletar') || //Verifica se o comando inclui deletar
+            comando.includes('delete') || //Verifica se o comando inclui delete
+            comando.includes('apagar') || //Verifica se o comando inclui apagar
+            comando.includes('apague') || //Verifica se o comando inclui apague
+            comando.includes('remover') || //Verifica se o comando inclui remover
+            comando.includes('remove')) { //Verifica se o comando inclui remove
+            if (VARTxtLine) { //Verifica se há um item selecionado
+              document.querySelector(".BTNdelete").click(); //Clica no botão de deletar
+              FNCshowMessage("Comando executado: Deletar item"); //Mensagem de comando executado
+            } else {
+              FNCshowMessage(VARTxtPad); //Mensagem de erro
+            }
+            return; //Retorna se não há um item selecionado
+          }
+
+          if (comando.includes('cadastrar') || //Verifica se o comando inclui cadastrar
+            comando.includes('cadastre') || //Verifica se o comando inclui cadastre
+            comando.includes('cadastro')) { //Verifica se o comando inclui cadastro
+            FNCopenCreate(); //Abre o modal de cadastro
+            FNCshowMessage("Comando executado: Cadastrar novo item"); //Mensagem de comando executado
+            return; //Retorna se o comando inclui cadastrar
+          }
+
+          if (comando.includes('sair') || //Verifica se o comando inclui sair
+            comando.includes('fechar') || //Verifica se o comando inclui fechar
+            comando.includes('encerrar') || //Verifica se o comando inclui encerrar
+            comando.includes('finalizar')) { //Verifica se o comando inclui finalizar
+            if (window.confirm('Sair do aplicativo?')) { //Verifica se o usuário quer sair
+              FNCshowMessage("Fechando aplicativo..."); //Mensagem de fechamento
+              setTimeout(() => {
+                window.close(); //Fecha o aplicativo
+              }, 1000); //Tempo de espera de 1 segundo
+            }
+            return; //Retorna se o usuário não quer sair
+          }
+
+          if (comando.includes('procurar por') || //Verifica se o comando inclui procurar por
+            comando.includes('pesquisar por')) { //Verifica se o comando inclui pesquisar por
+            comando = comando //Remove procurar por ou pesquisar por
+              .replace('procurar por', '') //Remove procurar por
+              .replace('pesquisar por', '') //Remove pesquisar por
+              .trim(); //Remove espaços em branco
+          }
+
+          if (comando.includes('procurar') || //Verifica se o comando inclui procurar
+            comando.includes('procure') || //Verifica se o comando inclui procure
+            comando.includes('pesquisar') || //Verifica se o comando inclui pesquisar
+            comando.includes('pesquise') || //Verifica se o comando inclui pesquise
+            comando.includes('encontrar') || //Verifica se o comando inclui encontrar
+            comando.includes('encontre') || //Verifica se o comando inclui encontre
+            comando.includes('achar') || //Verifica se o comando inclui achar
+            comando.includes('ache')) { //Verifica se o comando inclui ache
+            comando = comando //Remove procurar, procure, pesquisar, pesquise, encontrar, encontre, achar, ache
+              .replace('procurar', '') //Remove procurar
+              .replace('procure', '') //Remove procure
+              .replace('pesquisar', '') //Remove pesquisar  
+              .replace('pesquise', '') //Remove pesquise
+              .replace('encontrar', '') //Remove encontrar
+              .replace('encontre', '') //Remove encontre
+              .replace('achar', '') //Remove achar
+              .replace('ache', '') //Remove ache
+              .trim(); //Remove espaços em branco
+          }
+
+          // Se não for comando específico, faz a pesquisa normal
+          document.getElementById("TXTquest").value = comando; //Insere o comando na caixa de pesquisa
+          FNCshowMessage("Texto capturado: " + comando); //Mensagem de texto capturado
+          FNCsearch(); //Faz a pesquisa
+        };
+
+        recognition.onerror = function (event) { //Função para capturar erros no reconhecimento de voz
+          if (event.error === "no-speech") { //Verifica se o erro é no reconhecimento de voz
+            FNCshowMessage("Sem captura de voz. Verifique se o microfone está funcionando ou ligado."); //Mensagem de erro
+          } else {
+            FNCshowMessage("Erro no reconhecimento de voz: " + event.error); //Mensagem de erro
+          }
+        };
+
+        recognition.onend = function () { //Função para capturar o fim do reconhecimento de voz
+          document.getElementById("BTNmicrofone").style.backgroundColor = ""; //Reseta a cor do botão
+        };
+
+        document.getElementById("BTNmicrofone").style.backgroundColor = "#ff4444"; //Muda a cor do botão
+      }
+
+      function FNCshowSecurityMessage() {
+        FNCshowMessage("⚠️ Ação não permitida por segurança");
+      }
+
+      function FNCaddSecurityProtections() {
+        document.addEventListener('contextmenu', function (e) {
+          e.preventDefault();
+          FNCshowSecurityMessage();
+          return false;
+        });
+
+        document.addEventListener('keydown', function (e) {
+          // F12
+          if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            FNCshowSecurityMessage();
+            return false;
+          }
+
+          if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+            e.preventDefault();
+            FNCshowSecurityMessage();
+            return false;
+          }
+
+          if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+            e.preventDefault();
+            FNCshowSecurityMessage();
+            return false;
+          }
+
+          if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+            FNCshowSecurityMessage();
+            return false;
+          }
+
+          if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+            e.preventDefault();
+            FNCshowSecurityMessage();
+            return false;
+          }
+        });
+
+        document.addEventListener('selectstart', function (e) {
+          e.preventDefault();
+          return false;
+        });
+
+        document.addEventListener('copy', function (e) {
+          e.preventDefault();
+          FNCshowSecurityMessage();
+          return false;
+        });
+
+        let devToolsOpened = false;
+
+        function detectDevTools() {
+          const widthThreshold = window.outerWidth - window.innerWidth > 160;
+          const heightThreshold = window.outerHeight - window.innerHeight > 160;
+
+          if (widthThreshold || heightThreshold) {
+            if (!devToolsOpened) {
+              devToolsOpened = true;
+              FNCshowSecurityMessage();
+            }
+          } else {
+            devToolsOpened = false;
+          }
+        }
+
+        setInterval(detectDevTools, 1000);
+
+        window.addEventListener('keydown', function (e) {
+          if (e.ctrlKey &&
+            ['a', 's', 'd', 'f', 'h', 'g', 'z', 'x', 'c', 'v', 'p'].indexOf(e.key.toLowerCase()) !== -1) {
+            e.preventDefault();
+            FNCshowSecurityMessage();
+            return false;
+          }
+        });
+      }
+
+      window.addEventListener('load', function () {
+        FNCaddSecurityProtections();
+        console.clear();
+      });
+
+      document.getElementById("BTNmicrofone").addEventListener("click", FNCstartMicrofone);
+
+      document.getElementById("BTNvenda").addEventListener("click", function () { //Adiciona evento de clique para o botão de vendas
+        FNCvenda();
+      });
+
+      document.addEventListener("keydown", function (event) { // Adicionar eventos de tecla
+        if (!document.activeElement.matches('input, textarea')) { // Verifica se não está em modal ou input
+          if (event.key.toLowerCase() === 'o') { // Verifica se a tecla pressionada é O
+            event.preventDefault(); //Previne o comportamento padrão do evento
+            FNCorcamento(); //Chama a função de orçamentos
+          } else if (event.key.toLowerCase() === 'v') {
+            event.preventDefault();
+            FNCvenda();
+          }
+        }
+      }
+      );
+
+      BTNcls.addEventListener("click", () => { //Adiciona evento de clique para o botão de limpar
+        FNCclean()
+      });
+
+      BTNhelp.addEventListener("click", FNChelp); //Adiciona evento de clique para ajuda
+
+      document.addEventListener("keydown", (event) => { //Adiciona evento de tecla para o modal de edição
+        const editModal = document.getElementById("editModal"); //Obtém o modal de edição
+        if (editModal.style.display === "flex") { //Verifica se o modal está aberto
+          if (event.key === "Enter") { //Verifica se a tecla pressionada é Enter
+            event.preventDefault(); //Previne o comportamento padrão do evento
+            FNCmakeEDIT(); //Chama a função para salvar a edição
+          }
+          if (event.key === "Escape") { //Verifica se a tecla pressionada é Escape
+            event.preventDefault(); //Previne o comportamento padrão do evento
+            FNCcloseEDIT(); //Fecha o modal de edição
+          }
+        }
+      });
+
+      window.addEventListener("keydown", (event) => { //Adiciona evento de tecla para pesquisa
+        if (event.key === "Enter") { //Verifica se a tecla pressionada é Enter
+          event.preventDefault(); //Previne o comportamento padrão do evento
+          FNCsearch(); //Chama a função de pesquisa
+        }
+        if (event.key === "Escape") { //Verifica se a tecla pressionada é Escape
+          event.preventDefault(); //Previne o comportamento padrão do evento
+          FNCclean(); //Chama a função de limpar
+        }
+        if (event.key === "F1") { //Verifica se a tecla pressionada é F1
+          event.preventDefault(); //Previne o comportamento padrão do evento
+          FNChelp(); //Chama a função de ajuda
+        }
+      });
+
+      document.getElementById("BTNedit").addEventListener("click", function () { //Adiciona evento de clique para o botão de editar
+        FNCopenEDIT(VARTxtLine); //Abre o modal de edição com os dados da linha selecionada
+      });
+      document.addEventListener('DOMContentLoaded', function () { //Adiciona evento de clique para o botão de limpar
+        document.getElementById('filterValor').addEventListener('change', function (e) {
+          const valorMax = document.getElementById('valorMax');
+          valorMax.classList.toggle('hidden', e.target.value !== 'entre');
+        });
+        const filterElements = ['filterValor', 'filterVer', 'valorMin', 'valorMax'];
+        filterElements.forEach(id => {
+          document.getElementById(id).addEventListener('change', () => {
+            FNCSearchData(document.getElementById('TXTquest').value);
+          });
+        });
+      });
+
+      function FNCopenCreate() { //Função para abrir o modal de cadastro
+        FNChabilitaBTN(false);
+        const data = localStorage.getItem(VARFileName);
+        const lines = data.split('\n').filter(line => line.trim());
+        let maxCode = 0;
+        lines.forEach(line => {
+          const parts = line.split('|');
+          const code = parseInt(parts[3]);
+          if (code > maxCode) maxCode = code;
+        });
+        const newCode = String(maxCode + 1).padStart(4, '0');
+        document.getElementById("VARnewCode").value = newCode;
+        if (VARTxtLine) {
+          const spans = VARTxtLine.querySelectorAll('span');
+          const valor = spans[0].textContent.trim().replace('R$', '').trim(); // Remove R$ e espaços
+          const posic = spans[1].textContent.trim();
+          const ver = spans[2].textContent.trim();
+          const item = spans[4].textContent.trim();
+          document.getElementById("VARnewValor").value = valor;
+          document.getElementById("VARnewPosic").value = posic;
+          document.getElementById("VARnewVer").value = ver;
+          document.getElementById("VARnewItem").value = item;
+        } else {
+          document.getElementById("VARnewValor").value = "";
+          document.getElementById("VARnewPosic").value = "";
+          document.getElementById("VARnewVer").value = "N";
+          document.getElementById("VARnewItem").value = "";
+        }
+        document.getElementById("VARcreateModal").style.display = "flex";
+        FNCshowMessage("Cadastrar novo item");
+      }
+
+      function FNCcloseCreate() { //Fecha o modal de cadastro
+        FNChabilitaBTN(true); //Reabilita botões principais
+        document.getElementById("VARcreateModal").style.display = "none"; //Fecha o modal de cadastro
+        FNCshowMessage("Cadastro de novo item cancelado"); //Mensagem de sucesso
+      }
+
+      function FNCrefdatabase() { //Função para refazer a base de dados
+        FNCshowMessage("Carregando dados de teste >");
+        function randomValue(min, max) { //Função para gerar valores aleatórios
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        const produtos = [ //Lista de produtos para gerar dados mais realistas
+          "Lâmpada LED 9w",
+          "Cabo flexível 2.5mm",
+          "Disjuntor 20A",
+          "Tomada 10A",
+          "Interruptor simples",
+          "Fita isolante 20m",
+          "Extensão 5m",
+          "Plafon LED",
+          "Sensor presença",
+          "Timer digital",
+          "Chuveiro 220v",
+          "Quadro distribuição",
+          "Campainha sem fio",
+          "Luminária pendente",
+          "Plug macho 20A"
+        ];
+        let itens = []; //Lista de itens
+        for (let i = 1; i <= 50; i++) {
+          const code = i.toString().padStart(4, '0');
+          const valor = (randomValue(1000, 99999) / 100).toFixed(2);
+          const posic = randomValue(1, 99999).toString().padStart(5, '0');
+          const ver = Math.random() > 0.3 ? 'S' : 'N'; // 70% verificados
+          const item = produtos[randomValue(0, produtos.length - 1)];
+          itens.push(`${valor}|${posic}|${ver}|${code}|${item}`);
+        }
+        itens.sort((a, b) => { //Ordena os itens por código
+          const codeA = a.split('|')[3];
+          const codeB = b.split('|')[3];
+          return codeA.localeCompare(codeB);
+        });
+        localStorage.setItem('itens.dbf', itens.join('\n')); //Salva no localStorage
+        FNCSearchData(""); // Atualizar a exibição
+      }
+
+      document.querySelector(".BTNcreate").addEventListener("click", FNCopenCreate); //Adiciona o evento ao botão Cadastrar existente
+
+      document.addEventListener("keydown", (event) => { //Adiciona evento de tecla para o modal de cadastro
+        const VARcreateModal = document.getElementById("VARcreateModal"); //Obtém o modal de cadastro
+        if (VARcreateModal.style.display === "flex") { //Verifica se o modal está aberto
+          switch (event.key) { //Verifica a tecla pressionada
+            case "Enter":
+              event.preventDefault(); //Previne o comportamento padrão do evento
+              FNCmakeCreate(); //Chama a função para salvar o novo item
+              break;
+            case "Escape":
+              event.preventDefault(); //Previne o comportamento padrão do evento
+              FNCcloseCreate(); //Fecha o modal de cadastro
+              break;
+          }
+        }
+      });
+
+      document.addEventListener("keydown", function (event) { //Adiciona eventos de tecla global para os atalhos
+        const VARcreateModal = document.getElementById("VARcreateModal"); //Obtém o modal de cadastro
+        const VAReditModal = document.getElementById("editModal"); //Obtém o modal de edição
+        if (VARcreateModal.style.display === "flex" || //Verifica se o modal de cadastro está aberto
+          VAReditModal.style.display === "flex" || //Verifica se o modal de edição está aberto
+          event.target.tagName === "INPUT" || //Verifica se a tecla pressionada é um campo de input
+          event.target.tagName === "TEXTAREA") { //Verifica se a tecla pressionada é um campo de textarea
+          return; //Retorna se está em algum modal ou em campo de input/textarea
+        }
+
+        switch (event.key.toLowerCase()) { //Verifica a tecla pressionada
+          case 'e': //Verifica se a tecla pressionada é E
+            event.preventDefault(); //Previne o comportamento padrão do evento
+            //Verifica se tem item selecionado antes de editar
+            if (VARTxtLine) { //Verifica se tem item selecionado
+              document.getElementById("BTNedit").click(); //Clica no botão de editar
+            } else { //Se não tem item selecionado
+              FNCshowMessage(VARTxtPad); //Mensagem de erro
+            }
+            break;
+          case 'd': //Verifica se a tecla pressionada é D
+            event.preventDefault(); //Previne o comportamento padrão do evento
+            if (VARTxtLine) { //Verifica se tem item selecionado
+              document.querySelector(".BTNdelete").click(); //Clica no botão de deletar
+            } else { //Se não tem item selecionado
+              FNCshowMessage(VARTxtPad); //Mensagem de erro
+            }
+            break;
+          case 'c':
+            event.preventDefault(); //Previne o comportamento padrão do evento
+            document.querySelector(".BTNcreate").click(); //Clica no botão de cadastrar
+            break;
+          case 'm': // Atalho para o microfone
+            event.preventDefault();
+            FNCstartMicrofone();
+            break;
+          case 'p': // Atalho para a caixa de pesquisa
+            event.preventDefault();
+            const searchBox = document.getElementById("TXTquest");
+            searchBox.focus();
+            searchBox.select(); // Seleciona todo o texto existente
+            FNCshowMessage("Digite sua pesquisa...");
+            break;
+        }
+      });
+
+      TXTsearch.addEventListener("input", FNCdebounce(() => { // Adiciona pesquisa dinâmica
+        const query = FNCnormSTR(TXTsearch.value);
+        FNCSearchData(query);
+      }, 300)); // 300ms de delay para não sobrecarregar
+
+      window.addEventListener("load", () => { //Adiciona evento de clique para o botão de limpar
+
+        localStorage.removeItem("itens.dbf");
+        FNCrefdatabase(); // Primeiro recarrega a base
+
+        document.getElementById("VARnameVerSpan").textContent = VARNameVer;
+        FNCupdateBTN();
+        loadFile(); // Depois carrega
+        FNCSearchData(""); // Por fim exibe
+        FNCshowMessage("Bem-vindo ao Ninja!");
+      });
+    </script>
+
+    <div id="VARcreateModal" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #1e3a5d;
+        padding: 6px;
+        border-radius: 5px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #1e3a5d;">
+      <div style="
+background-color: #1e3a5d;
+padding: 6px;
+border-radius: 5px;
+width: 300px;
+color: white;">
+        <div style="
+background-color: #4f8dcb;
+color: white;
+padding: 5px;
+text-align: center;
+border-radius: 5px;
+margin-bottom: 15px;
+font-weight: bold;">Cadastrar Novo Item</div>
+        <label for="VARnewCode">Code:</label>
+        <input type="text" id="VARnewCode" style="width: 100%; margin-bottom: 10px" disabled />
+        <label for="VARnewItem">Item:</label>
+        <input type="text" id="VARnewItem" style="width: 100%; margin-bottom: 20px" />
+        <div class="button-container" style="justify-content: space-between">
+          <button id="BTNcreate" onclick="FNCmakeCreate()">[ENTER] Cadastrar</button>
+          <button id="BTNcancelCreate" onclick="FNCcloseCreate()">[ESC] Cancelar</button>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
